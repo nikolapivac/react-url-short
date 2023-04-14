@@ -1,26 +1,36 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
+import { Header } from './shared/Header';
+import { NewUrl } from './urls/pages/NewUrl';
+import { Urls } from './urls/pages/Urls';
+import { ProtectedRoute } from './user/components/ProtectedRoute';
+import { SignInPage } from './user/pages/SignInPage';
+import { SignUpPage } from './user/pages/SignUpPage';
 
-function App() {
+export const App = () => {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <Header />
+      <Routes>
+        <Route path='/' element={<SignInPage />} />
+        <Route path='/signin/' element={<SignInPage />} />
+        <Route path='/signup/' element={<SignUpPage />} />
+        <Route
+          path='/urls'
+          element={
+            <ProtectedRoute>
+              <Urls />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path='/shorten'
+          element={
+            <ProtectedRoute>
+              <NewUrl />
+            </ProtectedRoute>
+          }
+        />
+      </Routes>
+    </Router>
   );
-}
-
-export default App;
+};
