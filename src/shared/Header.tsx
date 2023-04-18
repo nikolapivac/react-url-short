@@ -1,6 +1,8 @@
 import { Button } from '@material-ui/core';
 import LogoutIcon from '@material-ui/icons/ExitToApp';
+import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 import styled from 'styled-components';
+import { ServerController } from '../api/server.controller';
 import { useUserContext } from '../user/components/UserContext';
 
 const HeaderContainer = styled.div`
@@ -22,7 +24,7 @@ const Logo = styled.h1`
 const Right = styled.div`
   display: flex;
   align-items: center;
-  gap: 24px;
+  gap: 16px;
 `;
 
 const UsernameContainer = styled.div`
@@ -34,6 +36,16 @@ const UsernameContainer = styled.div`
 export const Header = () => {
   const { username, logout, isLoggedIn } = useUserContext();
 
+  const handleDeactivate = async () => {
+    try {
+      const token = localStorage.getItem('accessToken');
+      await ServerController.DeleteUser.deleteUser(token);
+      logout?.();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <HeaderContainer>
       <Logo>URL SHORTENER</Logo>
@@ -42,11 +54,22 @@ export const Header = () => {
           <UsernameContainer>{username}</UsernameContainer>
           <Button
             variant='outlined'
-            style={{ backgroundColor: '#bdc3cc', marginRight: 12 }}
+            style={{ backgroundColor: '#bdc3cc' }}
             onClick={logout}
           >
-            <LogoutIcon />
+            <LogoutIcon style={{ marginRight: 6 }} />
             Log Out
+          </Button>
+          <Button
+            variant='outlined'
+            color='secondary'
+            style={{
+              marginRight: 12,
+            }}
+            onClick={handleDeactivate}
+          >
+            <HighlightOffIcon style={{ marginRight: 6 }} />
+            Deactivate
           </Button>
         </Right>
       )}

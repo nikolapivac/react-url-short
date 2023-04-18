@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { ServerController } from '../../api/server.controller';
+import { useAuthValidatorContext } from '../components/AuthValidatorContext';
 
 const FormWrapper = styled.div`
   width: 100vw;
@@ -24,53 +25,43 @@ const FormContainer = styled.div`
 `;
 
 export const SignUpPage = () => {
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [email, setEmail] = useState('');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [helperUser, setHelperUser] = useState('');
-  const [helperPass, setHelperPass] = useState('');
+  const [errorMsg, setErrorMsg] = useState('');
+
+  const {
+    helperFName,
+    helperLName,
+    helperEmail,
+    helperUser,
+    helperPass,
+    validateFName,
+    validateLName,
+    validateUsername,
+    validatePassword,
+    validateEmail,
+    readyToSignUp,
+  } = useAuthValidatorContext();
+
   const navigate = useNavigate();
-
-  const validatePassword = (password: string) => {
-    if (password.length < 8) {
-      setHelperPass('Password must be longer than 8 characters.');
-      return false;
-    } else if (
-      !/((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/.test(password)
-    ) {
-      setHelperPass(
-        'Password must contain at least 1 uppercase letter, 1 lowercase letter and one number OR special character.'
-      );
-      return false;
-    }
-    setHelperPass('');
-    return true;
-  };
-
-  const validateUsername = (username: string) => {
-    if (username.length < 4 || username.length > 20) {
-      setHelperUser('Username must be between 4-20 characters long');
-      return false;
-    } else if (!/^(?=.*[a-zA-Z])([a-zA-Z0-9_.-]+)$/.test(username)) {
-      setHelperUser(
-        'Username must contain letters and can contain numbers, underscores (_), dots (.) and dashes (-)'
-      );
-      return false;
-    }
-    setHelperUser('');
-    return true;
-  };
 
   const handleSignUp = async () => {
     try {
-      if (!helperPass && !helperUser && username && password) {
+      if (readyToSignUp?.()) {
         const response = await ServerController.Authentication.signUp({
+          firstName,
+          lastName,
+          email,
           username,
           password,
         });
         if (response.statusCode === 200) {
-          navigate('/signin');
+          navigate('/linksent');
         } else if (response.statusCode === 409) {
-          setHelperUser('Username already in use');
+          setErrorMsg('User already exists');
         }
       }
     } catch (error) {
@@ -82,6 +73,55 @@ export const SignUpPage = () => {
     <FormWrapper>
       <FormContainer>
         <h1>Create an account</h1>
+        {errorMsg && <h3 style={{ color: 'red' }}>{errorMsg}</h3>}
+        <FormControl fullWidth>
+          <TextField
+            required
+            error={helperFName !== ''}
+            label='First Name'
+            placeholder='First Name'
+            margin='dense'
+            variant='outlined'
+            helperText={helperFName}
+            onChange={(e) => {
+              if (validateFName?.(e.target.value)) {
+                setFirstName(e.target.value);
+              }
+            }}
+          />
+        </FormControl>
+        <FormControl fullWidth>
+          <TextField
+            required
+            error={helperLName !== ''}
+            label='Last Name'
+            placeholder='Last Name'
+            margin='dense'
+            variant='outlined'
+            helperText={helperLName}
+            onChange={(e) => {
+              if (validateLName?.(e.target.value)) {
+                setLastName(e.target.value);
+              }
+            }}
+          />
+        </FormControl>
+        <FormControl fullWidth>
+          <TextField
+            required
+            error={helperEmail !== ''}
+            label='E-mail'
+            placeholder='E-mail'
+            margin='dense'
+            variant='outlined'
+            helperText={helperEmail}
+            onChange={(e) => {
+              if (validateEmail?.(e.target.value)) {
+                setEmail(e.target.value);
+              }
+            }}
+          />
+        </FormControl>
         <FormControl fullWidth>
           <TextField
             required
@@ -92,7 +132,7 @@ export const SignUpPage = () => {
             variant='outlined'
             helperText={helperUser}
             onChange={(e) => {
-              if (validateUsername(e.target.value)) {
+              if (validateUsername?.(e.target.value)) {
                 setUsername(e.target.value);
               }
             }}
@@ -109,7 +149,7 @@ export const SignUpPage = () => {
             variant='outlined'
             helperText={helperPass}
             onChange={(e) => {
-              if (validatePassword(e.target.value)) {
+              if (validatePassword?.(e.target.value)) {
                 setPassword(e.target.value);
               }
             }}

@@ -46,10 +46,15 @@ export const SignInPage = () => {
           password,
         });
         const token = response.accessToken;
+        const validEmail = response.validEmail;
 
         if (token) {
-          login?.(token);
-          navigate('/urls');
+          if (!validEmail) {
+            navigate('/linksent');
+          } else {
+            login?.(token);
+            navigate('/urls');
+          }
         } else {
           setErrorMsg('User not found. Please check your credentials.');
         }

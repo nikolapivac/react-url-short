@@ -1,11 +1,11 @@
 import { GetUrlsResponseDto } from './dto/get-urls-response.dto';
 
 export class GetUrlsApi {
-  static readonly BASE_URL = process.env.BASE_URL;
+  readonly BASE_URL = process.env.REACT_APP_BASE_URL;
 
   async getUrls() {
     const token = localStorage.getItem('accessToken');
-    const response = await fetch(`http://localhost:5001/url`, {
+    const response = await fetch(`${this.BASE_URL}/url`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',

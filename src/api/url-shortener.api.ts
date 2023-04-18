@@ -1,11 +1,11 @@
 import { CreateUrlResponseDto } from './dto/create-url-response.dto';
 
 export class UrlShortenerApi {
-  static readonly BASE_URL = process.env.BASE_URL;
+  readonly BASE_URL = process.env.REACT_APP_BASE_URL;
 
   async getUrlShort(longUrl: string) {
     const token = localStorage.getItem('accessToken');
-    const response = await fetch('http://localhost:5001/url/shorten', {
+    const response = await fetch(`${this.BASE_URL}/url/shorten`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
