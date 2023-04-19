@@ -40,17 +40,18 @@ export const SignInPage = () => {
 
   const handleSignIn = async () => {
     try {
-      if (!helperPass && !helperUser && username && password) {
+      if (!helperPass && !helperUser) {
         const response = await ServerController.Authentication.signIn({
           username,
           password,
         });
         const token = response.accessToken;
         const validEmail = response.validEmail;
+        const email = response.email;
 
         if (token) {
           if (!validEmail) {
-            navigate('/linksent');
+            navigate(`/linksent/${email}`);
           } else {
             login?.(token);
             navigate('/urls');
@@ -110,6 +111,7 @@ export const SignInPage = () => {
           />
         </FormControl>
         <Button
+          disabled={!username || !password}
           style={{ marginTop: '10px' }}
           fullWidth
           variant='contained'

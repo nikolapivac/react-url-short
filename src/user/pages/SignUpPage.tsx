@@ -59,7 +59,7 @@ export const SignUpPage = () => {
           password,
         });
         if (response.statusCode === 200) {
-          navigate('/linksent');
+          navigate(`/linksent/${email}`);
         } else if (response.statusCode === 409) {
           setErrorMsg('User already exists');
         }
@@ -156,6 +156,7 @@ export const SignUpPage = () => {
           />
         </FormControl>
         <Button
+          disabled={!firstName || !lastName || !username || !email || !password}
           style={{ marginTop: '10px' }}
           fullWidth
           variant='contained'

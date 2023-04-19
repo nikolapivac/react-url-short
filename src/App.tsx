@@ -24,7 +24,7 @@ export const App = () => {
             </AuthValidatorContextProvider>
           }
         />
-        <Route path='/linksent/' element={<LinkSentPage />} />
+        <Route path='/linksent/:email' element={<LinkSentPage />} />
         <Route path='/verify/:code' element={<VerifyEmailPage />} />
         <Route
           path='/urls'
